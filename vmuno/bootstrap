@@ -1,8 +1,15 @@
 #!/usr/bin/expect -f
 
+if { [llength $argv] != 1} {
+    puts "Usage: ./bootstrap <vmname>"
+    exit 1
+}
+
+set vmname [lindex $argv 0]
+
 # Make sure we have installmedia and clean root disk
 exec curl -sOC- https://cdn.openbsd.org/pub/OpenBSD/6.7/amd64/install67.iso
-exec qemu-img create -f qcow2 vmuno.qcow2 20G
+exec qemu-img create -f qcow2 vm$vmname.qcow2 20G
 
 spawn qemu-system-x86_64 \
     -no-reboot \
@@ -10,7 +17,7 @@ spawn qemu-system-x86_64 \
     -nographic \
     -smp 2 \
     -m 2G \
-    -drive if=virtio,file=vmuno.qcow2,format=qcow2,media=disk \
+    -drive if=virtio,file=vm$vmname.qcow2,format=qcow2,media=disk \
     -drive file=install67.iso,media=cdrom \
     -netdev user,id=internet,ipv4=on,ipv6=off \
     -device virtio-net,netdev=internet
@@ -30,7 +37,8 @@ expect "#"
 send "cat << EOF > /auto_install.conf\r"
 
 expect ">"
-send [exec cat vmuno-install.conf]
+send "System hostname = $vmname\r"
+send [exec cat auto_install.conf]
 send "\rEOF\r"
 
 # Exit shell and trigger autoinstall directly instead of waiting for timeout
