@@ -11,6 +11,7 @@ if [ ! -f vm"$1".qcow2 ]; then
 fi
 
 qemu-system-x86_64 \
+    -sandbox on \
     -machine type=q35,accel=kvm \
     -nographic \
     -smp 2 \
