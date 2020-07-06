@@ -19,8 +19,7 @@ spawn qemu-system-x86_64 \
     -m 2G \
     -drive if=virtio,file=vm$vmname.qcow2,format=qcow2,media=disk \
     -drive file=install67.iso,media=cdrom \
-    -netdev user,id=internet,ipv4=on,ipv6=off \
-    -device virtio-net,netdev=internet
+    -nic user,ipv6=off,model=virtio
 
 # Catch bootloader to set console to serial, and continue boot
 expect "boot>"

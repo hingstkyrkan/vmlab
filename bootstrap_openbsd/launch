@@ -16,5 +16,4 @@ qemu-system-x86_64 \
     -smp 2 \
     -m 2G \
     -drive if=virtio,file=vm${1}.qcow2,format=qcow2,media=disk \
-    -netdev user,id=internet,ipv4=on,ipv6=off \
-    -device virtio-net,netdev=internet
+    -nic user,ipv6=off,model=virtio

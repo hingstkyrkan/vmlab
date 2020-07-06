@@ -28,7 +28,5 @@ qemu-system-x86_64 \
     -smp 2 \
     -m 2G \
     -drive if=virtio,file="${vmname}.qcow2",format=qcow2,media=disk \
-    -netdev user,id=internet,ipv4=on,ipv6=off \
-    -netdev "socket,id=int${netid},mcast=239.76.79.76:1$(printf %04d "${netid}")" \
-    -device virtio-net,netdev=internet \
-    -device "virtio-net,netdev=int${netid},mac=$(randmac)"
+    -nic user,ipv6=off,model=virtio \
+    -nic socket,mcast=239.76.79.76:$((10000 + netid)),model=virtio,mac="$(randmac)"
