@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -e
+usage() {
+    echo "Usage: $(basename "$0") <vmname> <netid 0-1000>"
+}
+
+randmac() {
+    printf "76:79:76:%02x:%02x:%02x\n" \
+	   $((RANDOM % 256)) $((RANDOM % 256)) $(( RANDOM % 256))
+}
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    usage
+    exit 1
+fi
+
+vmname="vm$1"
+netid="$2"
+
+if [ ! -f "${vmname}.qcow2" ]; then
+    echo "No such VM"
+    exit 1
+fi
+
+qemu-system-x86_64 \
+    -machine type=q35,accel=kvm \
+    -nographic \
+    -smp 2 \
+    -m 2G \
+    -drive if=virtio,file="${vmname}.qcow2",format=qcow2,media=disk \
+    -netdev user,id=internet,ipv4=on,ipv6=off \
+    -netdev "socket,id=int${netid},mcast=239.76.79.76:1$(printf %04d "${netid}")" \
+    -device virtio-net,netdev=internet \
+    -device "virtio-net,netdev=int${netid},mac=$(randmac)"
