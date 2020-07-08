@@ -9,7 +9,7 @@ randmac() {
 	   $((RANDOM % 256)) $((RANDOM % 256)) $(( RANDOM % 256))
 }
 
-[ "$(uname)" = Linux ] && SECCOMP=on || SECCOMP=off
+[ "$(uname)" = Linux ] && SANDBOX="-sandbox on"
 
 if [ -z "$1" ] || [ -z "$2" ]; then
     usage
@@ -25,7 +25,7 @@ if [ ! -f "${vmname}.qcow2" ]; then
 fi
 
 qemu-system-x86_64 \
-    -sandbox "${SECCOMP}" \
+    ${SANDBOX} \
     -machine type=q35,accel=kvm:hvf \
     -nographic \
     -smp 2 \

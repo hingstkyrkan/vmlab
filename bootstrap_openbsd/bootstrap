@@ -11,9 +11,7 @@ set vmname [lindex $argv 0]
 exec curl -sOC- https://cdn.openbsd.org/pub/OpenBSD/6.7/amd64/install67.iso
 exec qemu-img create -f qcow2 vm$vmname.qcow2 20G
 
-# XXX Check if running Linux and enable -sandbox based on that fact
 spawn qemu-system-x86_64 \
-    -sandbox off \
     -no-reboot \
     -machine type=q35,accel=kvm:hvf \
     -nographic \
