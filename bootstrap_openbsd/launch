@@ -1,5 +1,7 @@
 #!/bin/sh
 
+[ "$(uname)" = Linux ] && SECCOMP=on || SECCOMP=off
+
 if [ -z "$1" ]; then
     echo "Usage: $(basename $0) <vmname>"
     exit 1
@@ -11,7 +13,7 @@ if [ ! -f vm"$1".qcow2 ]; then
 fi
 
 qemu-system-x86_64 \
-    -sandbox on \
+    -sandbox "${SECCOMP}" \
     -machine type=q35,accel=kvm:hvf \
     -nographic \
     -smp 2 \
