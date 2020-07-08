@@ -3,11 +3,13 @@
 [ "$(uname)" = Linux ] && SECCOMP=on || SECCOMP=off
 
 if [ -z "$1" ]; then
-    echo "Usage: $(basename $0) <vmname>"
+    echo "Usage: $(basename "$0") <vmname>"
     exit 1
 fi
 
-if [ ! -f vm"$1".qcow2 ]; then
+vmname="vm$1"
+
+if [ ! -f "${vmname}.qcow2" ]; then
     echo "No such VM"
     exit 1
 fi
@@ -18,5 +20,5 @@ qemu-system-x86_64 \
     -nographic \
     -smp 2 \
     -m 2G \
-    -drive if=virtio,file=vm${1}.qcow2,format=qcow2,media=disk \
+    -drive if=virtio,file="${vmname}.qcow2",format=qcow2,media=disk \
     -nic user,ipv6=off,model=virtio
