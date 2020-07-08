@@ -24,7 +24,7 @@ fi
 
 qemu-system-x86_64 \
     -sandbox on \
-    -machine type=q35,accel=kvm \
+    -machine type=q35,accel=kvm:hvf \
     -nographic \
     -smp 2 \
     -m 2G \

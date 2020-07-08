@@ -1,4 +1,4 @@
-#!/usr/bin/expect -f
+#!/usr/bin/env expect
 
 if { [llength $argv] != 1} {
     puts "Usage: ./bootstrap <vmname>"
@@ -14,7 +14,7 @@ exec qemu-img create -f qcow2 vm$vmname.qcow2 20G
 spawn qemu-system-x86_64 \
     -sandbox on \
     -no-reboot \
-    -machine type=q35,accel=kvm \
+    -machine type=q35,accel=kvm:hvf \
     -nographic \
     -smp 2 \
     -m 2G \
