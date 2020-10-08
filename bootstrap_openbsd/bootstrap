@@ -8,7 +8,7 @@ if { [llength $argv] != 1} {
 set vmname [lindex $argv 0]
 
 # Make sure we have installmedia and clean root disk
-exec curl -sOC- https://cdn.openbsd.org/pub/OpenBSD/6.7/amd64/install67.iso
+exec curl -sOC- https://cdn.openbsd.org/pub/OpenBSD/snapshots/amd64/install68.iso
 exec qemu-img create -f qcow2 vm$vmname.qcow2 20G
 
 spawn qemu-system-x86_64 \
@@ -18,7 +18,7 @@ spawn qemu-system-x86_64 \
     -smp 2 \
     -m 2G \
     -drive if=virtio,file=vm$vmname.qcow2,format=qcow2,media=disk \
-    -drive file=install67.iso,media=cdrom \
+    -drive file=install68.iso,media=cdrom \
     -nic user,ipv6=off,model=virtio
 
 # Catch bootloader to set console to serial, and continue boot
