@@ -19,7 +19,7 @@ fi
 vmname="vm$1"
 netid="$2"
 
-if [ ! -f "${vmname}.qcow2" ]; then
+if [ ! -f "vms/${vmname}.qcow2" ]; then
     echo "No such VM"
     exit 1
 fi
@@ -30,6 +30,6 @@ qemu-system-x86_64 \
     -nographic \
     -smp 2 \
     -m 2G \
-    -drive if=virtio,file="${vmname}.qcow2",format=qcow2,media=disk \
+    -drive if=virtio,file="vms/${vmname}.qcow2",format=qcow2,media=disk \
     -nic user,ipv6=off,model=virtio \
     -nic socket,mcast=239.76.79.76:$((10000 + netid)),model=virtio,mac="$(randmac)"

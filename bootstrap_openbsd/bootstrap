@@ -8,8 +8,8 @@ if { [llength $argv] != 1} {
 set vmname [lindex $argv 0]
 
 # Make sure we have installmedia and clean root disk
-exec curl -sOC- https://cdn.openbsd.org/pub/OpenBSD/6.8/amd64/install68.iso
-exec qemu-img create -f qcow2 vm$vmname.qcow2 20G
+exec curl -sC- -o isos/install68.iso https://cdn.openbsd.org/pub/OpenBSD/6.8/amd64/install68.iso
+exec qemu-img create -f qcow2 vms/vm$vmname.qcow2 20G
 
 spawn qemu-system-x86_64 \
     -no-reboot \
@@ -17,8 +17,8 @@ spawn qemu-system-x86_64 \
     -nographic \
     -smp 2 \
     -m 2G \
-    -drive if=virtio,file=vm$vmname.qcow2,format=qcow2,media=disk \
-    -drive file=install68.iso,media=cdrom \
+    -drive if=virtio,file=vms/vm$vmname.qcow2,format=qcow2,media=disk \
+    -drive file=isos/install68.iso,media=cdrom \
     -nic user,ipv6=off,model=virtio
 
 # Catch bootloader to set console to serial, and continue boot
@@ -37,7 +37,7 @@ send "cat << EOF > /auto_install.conf\r"
 
 expect ">"
 send "System hostname = $vmname\r"
-send [exec cat auto_install.conf]
+send [exec cat bootstrap_openbsd/auto_install.conf]
 send "\rEOF\r"
 
 # Exit shell and trigger autoinstall directly instead of waiting for timeout
