@@ -1,18 +1,68 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -e
+usage() {
+    printf "Usage: %s <vmname> [[ -i ] [-n<0-1000> ...]] \n" "$(basename "$0")"
+    printf "\n\tNote: Order matters\n\n"
+    printf "\t-i\t\tAdd nic with internet\n"
+    printf "\t-n<NETID>\tAdd nic(s) in private network\n"
+}
+
+fail() {
+    printf "%s\n\n" "$1"
+    usage
+    exit 1
+}
+
+
+randmac() {
+    printf "76:79:76:%02x:%02x:%02x\n" \
+	   $((RANDOM % 256)) $((RANDOM % 256)) $(( RANDOM % 256))
+}
 
 [ "$(uname)" = Linux ] && SANDBOX="-sandbox on"
 
 if [ -z "$1" ]; then
-    echo "Usage: $(basename "$0") <vmname>"
+    usage
     exit 1
 fi
 
 vmname="vm$1"
+shift
 
 if [ ! -f "vms/${vmname}.qcow2" ]; then
     echo "No such VM"
     exit 1
 fi
+
+nicargs="-nic none"
+
+i_used=0
+while getopts "in:" nicopt; do
+    case $nicopt in
+        i)
+            if [ "$i_used" = 0 ]; then
+                i_used=1
+                nicargs="${nicargs} -nic user,ipv6=off,model=virtio"
+            else
+                fail "Error: Multiple -i specified"
+            fi
+            ;;
+
+        n)
+            netid=$OPTARG
+
+            if [ "$netid" -ge 0 ] && [ "$netid" -le 1000 ]; then
+                nicargs="${nicargs} -nic socket,mcast=239.76.79.76:$((10000 + netid)),model=virtio,mac=$(randmac)"
+            else
+                fail "Error: Invalid NETID"
+            fi
+            ;;
+
+        *)
+            usage
+            exit 1
+    esac
+done
 
 qemu-system-x86_64 \
     ${SANDBOX} \
@@ -21,4 +71,4 @@ qemu-system-x86_64 \
     -smp 2 \
     -m 2G \
     -drive if=virtio,file="vms/${vmname}.qcow2",format=qcow2,media=disk \
-    -nic user,ipv6=off,model=virtio
+    ${nicargs}
