@@ -67,8 +67,13 @@ done
 qemu-system-x86_64 \
     ${SANDBOX} \
     -machine type=q35,accel=kvm:hvf \
-    -nographic \
+    -display none \
     -smp 2 \
     -m 2G \
+    -pidfile run/"${vmname}.pid" \
+    -daemonize \
+    -chardev socket,id=cons,server,path="run/${vmname}.console",nowait,telnet \
+    -serial chardev:cons \
+    -monitor unix:"run/${vmname}.monitor",server,nowait \
     -drive if=virtio,file="vms/${vmname}.qcow2",format=qcow2,media=disk \
     ${nicargs}
