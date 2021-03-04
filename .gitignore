@@ -1,2 +1,5 @@
 vms/*.qcow2
 isos/*.iso
+run/*.console
+run/*.monitor
+run/*.pid
