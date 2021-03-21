@@ -42,7 +42,7 @@ while getopts "in:" nicopt; do
         i)
             if [ "$i_used" = 0 ]; then
                 i_used=1
-                nicargs="${nicargs} -nic user,ipv6=off,model=virtio"
+                nicargs="${nicargs} -nic user,ipv6=off,model=e1000"
             else
                 fail "Error: Multiple -i specified"
             fi
